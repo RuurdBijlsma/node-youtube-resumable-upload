@@ -1,8 +1,8 @@
-var fs = require('fs');
-var request = require('request');
-var EventEmitter = require('events').EventEmitter;
-var mime = require('mime');
-var util = require('util');
+const fs = require('fs');
+const request = require('request');
+const EventEmitter = require('events').EventEmitter;
+const mime = require('mime');
+const util = require('util');
 
 function resumableUpload() {
     this.byteCount = 0; //init variables
@@ -18,8 +18,8 @@ util.inherits(resumableUpload, EventEmitter);
 
 //Init the upload by POSTing google for an upload URL (saved to self.location)
 resumableUpload.prototype.upload = function () {
-    var self = this;
-    var options = {
+    const self = this;
+    const options = {
         url: 'https://' + self.host + self.api + '?uploadType=resumable&part=snippet,status,contentDetails',
         headers: {
             'Host': self.host,
@@ -27,7 +27,7 @@ resumableUpload.prototype.upload = function () {
             'Content-Length': new Buffer(JSON.stringify(self.metadata)).length,
             'Content-Type': 'application/json',
             'X-Upload-Content-Length': fs.statSync(self.filepath).size,
-            'X-Upload-Content-Type': mime.lookup(self.filepath)
+            'X-Upload-Content-Type': mime.getType(self.filepath)
         },
         body: JSON.stringify(self.metadata)
     };
@@ -50,13 +50,13 @@ resumableUpload.prototype.upload = function () {
 
 //Pipes uploadPipe to self.location (Google's Location header)
 resumableUpload.prototype.send = function () {
-    var self = this;
-    var options = {
+    const self = this;
+    const options = {
         url: self.location, //self.location becomes the Google-provided URL to PUT to
         headers: {
             'Authorization': 'Bearer ' + self.tokens.access_token,
             'Content-Length': fs.statSync(self.filepath).size - self.byteCount,
-            'Content-Type': mime.lookup(self.filepath)
+            'Content-Type': mime.getType(self.filepath)
         }
     };
     try {
@@ -69,7 +69,7 @@ resumableUpload.prototype.send = function () {
         self.emit('error', new Error(e));
         return;
     }
-    var health = setInterval(function () {
+    const health = setInterval(function () {
         self.getProgress(function (err, res, body) {
             if (!err && typeof res.headers.range !== 'undefined') {
                 self.emit('progress', res.headers.range.substring(8));
@@ -98,8 +98,8 @@ resumableUpload.prototype.send = function () {
 }
 
 resumableUpload.prototype.getProgress = function (handler) {
-    var self = this;
-    var options = {
+    const self = this;
+    const options = {
         url: self.location,
         headers: {
             'Authorization': 'Bearer ' + self.tokens.access_token,
