@@ -86,7 +86,9 @@ resumableUpload.prototype.send = function () {
         if ((self.retry > 0) || (self.retry <= -1)) {
             self.retry--;
             self.getProgress(function (err, res, b) {
-                if (typeof res.headers.range !== 'undefined') {
+                if (err) {
+                    console.warn(err);
+                } else if (typeof res.headers.range !== 'undefined') {
                     self.byteCount = res.headers.range.substring(8); //parse response
                 } else {
                     self.byteCount = 0;
