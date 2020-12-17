@@ -101,6 +101,9 @@ resumableUpload.prototype.send = function () {
 
 resumableUpload.prototype.getProgress = function (handler) {
     const self = this;
+    console.log("location:", self.location);
+    if (self.location === undefined || self.location === null)
+        return;
     const options = {
         url: self.location,
         headers: {
