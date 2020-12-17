@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "google-auth-cli": "0.0.1",
-    "mime": "latest",
-    "request": "latest"
+    "mime": "^2.4.7",
+    "request": "^2.88.2"
   },
   "directories": {
     "test": "test"
